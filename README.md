@@ -1,2 +1,2 @@
-# Diff_MC
-Diffusion Monte Carlo simulation of Hydrogen-variants
+# Diffusion Monte Carlo
+Diffusion Monte Carlo simulation of Hydrogen-variants @ Subeen Pang, Seoul National University
