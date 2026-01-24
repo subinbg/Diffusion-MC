@@ -212,23 +212,25 @@ fn html_escape(text: &str) -> String {
 fn generate_page(body_content: &str) -> Markup {
     html! {
         (DOCTYPE)
-        html lang="en" {
+        html lang="en" data-theme="light" {
             head {
                 meta charset="UTF-8";
                 meta name="viewport" content="width=device-width, initial-scale=1.0";
                 title { "Diffusion Monte Carlo" }
 
-                // Simple.css - classless CSS framework
-                link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css";
+                // Pico CSS - classless version for semantic HTML styling
+                link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css";
 
                 // KaTeX CSS for math styling
                 link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css";
 
-                // Minimal custom styles for math display
+                // Minimal custom styles
                 style {
+                    ":root { --pico-font-size: 106.25%; }"
                     ".math-display { overflow-x: auto; padding: 1rem 0; text-align: center; }"
                     ".math-inline { white-space: nowrap; }"
-                    ".math-error { color: red; }"
+                    ".math-error { color: var(--pico-del-color); }"
+                    "main { padding-top: 2rem; }"
                 }
             }
             body {
@@ -236,7 +238,7 @@ fn generate_page(body_content: &str) -> Markup {
                     (PreEscaped(body_content))
                 }
                 footer {
-                    p { "Generated with a Rust-based static site builder using maud and KaTeX" }
+                    p { "Copyright © 2017 Subeen Pang" }
                 }
             }
         }
