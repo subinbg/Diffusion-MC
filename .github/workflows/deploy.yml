@@ -26,11 +26,10 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build site-builder
-        working-directory: site-builder
-        run: cargo build --release
+        run: cargo build --release -p site-builder
 
       - name: Generate site
-        run: ./site-builder/target/release/site-builder
+        run: ./target/release/site-builder
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
