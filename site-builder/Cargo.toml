@@ -5,3 +5,5 @@ edition = "2021"
 
 [dependencies]
 pulldown-cmark = { version = "0.12", features = ["html"] }
+maud = "0.26"
+katex = "0.4"
