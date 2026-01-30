@@ -1,10 +1,6 @@
 # Diffusion Monte Carlo
 
-This repository estimates the ground state of two well-known Bosonic systems: the Hydrogen ($`H`$), Hydrogen ion ($`H_2^+`$), and Hydrogen molecule ($`H_2`$) via Diffusion Monte Carlo (DMC).
-
-![DMC simulation results for H, H2+, and H2](https://raw.githubusercontent.com/subinbg/Diff_MC/master/images/all.png)
-
-**Figure 1.** Diffusion Monte Carlo simulations of $`H`$, $`H_2^+`$, and $`H_2`$. Simulations were executed with 10000 replicas and imaginary time interval of 0.01 atomic units.
+This repository estimates the ground state of three well-known Bosonic systems: the Hydrogen ($`H`$), Hydrogen ion ($`H_2^+`$), and Hydrogen molecule ($`H_2`$) via Diffusion Monte Carlo (DMC).
 
 ---
 

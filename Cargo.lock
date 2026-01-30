@@ -311,57 +311,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dmc-cli"
-version = "0.1.0"
-dependencies = [
- "dmc-core",
- "dmc-output",
-]
-
-[[package]]
-name = "dmc-core"
-version = "0.2.0"
-dependencies = [
- "approx",
- "nalgebra",
- "rand",
- "rand_distr",
- "rayon",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "toml",
-]
-
-[[package]]
-name = "dmc-output"
-version = "0.1.0"
-dependencies = [
- "console",
- "csv",
- "dmc-core",
- "indicatif",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "dmc-web"
-version = "0.1.0"
-dependencies = [
- "dmc-core",
- "getrandom",
- "js-sys",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-test",
- "web-sys",
-]
-
-[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -378,6 +327,19 @@ name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
+
+[[package]]
+name = "examples"
+version = "0.1.0"
+dependencies = [
+ "console",
+ "csv",
+ "indicatif",
+ "serde",
+ "serde_json",
+ "simulation",
+ "thiserror 2.0.18",
+]
 
 [[package]]
 name = "find-msvc-tools"
@@ -998,14 +960,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "site-builder"
-version = "0.1.0"
+name = "simulation"
+version = "0.2.0"
 dependencies = [
- "clap",
- "katex",
- "maud",
- "pulldown-cmark",
- "tiny_http",
+ "approx",
+ "nalgebra",
+ "rand",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "toml",
 ]
 
 [[package]]
@@ -1290,6 +1256,26 @@ name = "wasm-bindgen-test-shared"
 version = "0.2.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8145dd1593bf0fb137dbfa85b8be79ec560a447298955877804640e40c2d6ea"
+
+[[package]]
+name = "web"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "getrandom",
+ "js-sys",
+ "katex",
+ "maud",
+ "pulldown-cmark",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "simulation",
+ "tiny_http",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
 
 [[package]]
 name = "web-sys"
