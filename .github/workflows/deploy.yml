@@ -24,12 +24,17 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
 
-      - name: Build site-builder
-        run: cargo build --release -p site-builder
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Build site binary
+        run: cargo build --release -p web --bin site
 
       - name: Generate site
-        run: ./target/release/site-builder
+        run: ./target/release/site build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

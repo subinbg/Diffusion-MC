@@ -1,4 +1,4 @@
-//! # dmc-core: Diffusion Monte Carlo Library
+//! # simulation: Diffusion Monte Carlo Library
 //!
 //! A Rust library for quantum ground state calculations using Diffusion Monte Carlo.
 //!
@@ -19,7 +19,7 @@
 //! enabling real-time visualization and custom output handling.
 //!
 //! ```rust,no_run
-//! use dmc_core::prelude::*;
+//! use simulation::prelude::*;
 //!
 //! let config = SimulationConfig::builder()
 //!     .num_walkers(10_000)
@@ -46,7 +46,7 @@
 //! ## From TOML Configuration
 //!
 //! ```rust,no_run
-//! use dmc_core::prelude::*;
+//! use simulation::prelude::*;
 //!
 //! let config = SimulationConfig::from_toml("dmc_config.toml").unwrap();
 //! let mut sim = Simulation::new(config).unwrap();

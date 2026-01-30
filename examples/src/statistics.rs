@@ -19,7 +19,7 @@ use crate::types::BlockData;
 /// # Example
 ///
 /// ```rust
-/// use dmc_output::statistics::block_average;
+/// use examples::statistics::block_average;
 ///
 /// let energies = vec![-0.5; 1000];
 /// let populations = vec![100; 1000];
@@ -79,7 +79,7 @@ pub fn block_average(
 /// # Example
 ///
 /// ```rust
-/// use dmc_output::statistics::{block_average, final_statistics};
+/// use examples::statistics::{block_average, final_statistics};
 ///
 /// let energies = vec![-0.5; 1000];
 /// let populations = vec![100; 1000];

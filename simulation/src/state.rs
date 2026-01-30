@@ -6,7 +6,7 @@
 //! # Example
 //!
 //! ```rust,no_run
-//! use dmc_core::prelude::*;
+//! use simulation::prelude::*;
 //!
 //! let config = SimulationConfig::builder()
 //!     .num_walkers(1000)

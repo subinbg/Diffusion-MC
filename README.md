@@ -351,7 +351,7 @@ The integral factors into three 1D Gaussian integrals:
 Therefore:
 
 ```math
-\int_{\mathbb{R}^3} d\mathbf{x} \, G_0(\mathbf{x}, \tau) = \left( \frac{m}{2\pi \hbar \tau} \right)^{3/2} \cdot \left( \frac{2\pi\hbar\tau}{m} \right)^{3/2} = 1 \quad \checkmark
+\int_{\mathbb{R}^3} d\mathbf{x} \, G_0(\mathbf{x}, \tau) = \left( \frac{m}{2\pi \hbar \tau} \right)^{3/2} \cdot \left( \frac{2\pi\hbar\tau}{m} \right)^{3/2} = 1
 ```
 
 ---

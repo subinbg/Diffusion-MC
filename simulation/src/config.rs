@@ -24,7 +24,7 @@
 //! # Builder Example
 //!
 //! ```rust,no_run
-//! use dmc_core::config::{SimulationConfig, SystemType, AlgorithmType, TrialWfParams};
+//! use simulation::config::{SimulationConfig, SystemType, AlgorithmType, TrialWfParams};
 //!
 //! let config = SimulationConfig::builder()
 //!     .num_walkers(10_000)
