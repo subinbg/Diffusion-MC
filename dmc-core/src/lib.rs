@@ -13,26 +13,34 @@
 //! | H₂⁺ ion | 1 | 2 | ≈ -0.6026 |
 //! | H₂ molecule | 2 | 2 | ≈ -1.1745 |
 //!
-//! ## Quick Start
+//! ## Generator API (Recommended)
+//!
+//! The generator API provides step-by-step control over the simulation,
+//! enabling real-time visualization and custom output handling.
 //!
 //! ```rust,no_run
 //! use dmc_core::prelude::*;
 //!
-//! // Configure simulation
 //! let config = SimulationConfig::builder()
 //!     .num_walkers(10_000)
 //!     .time_step(0.01)
 //!     .total_steps(50_000)
 //!     .system(SystemType::Hydrogen)
 //!     .algorithm(AlgorithmType::ImportanceSampled { max_offspring: 3 })
+//!     .trial_wavefunction(TrialWfParams::Hydrogen { alpha: 1.0 })
 //!     .build()
 //!     .unwrap();
 //!
-//! // Run simulation
-//! let result = run_simulation(config).unwrap();
+//! // Create simulation generator
+//! let mut sim = Simulation::new(config).unwrap();
 //!
-//! println!("Ground state energy: {:.4} +/- {:.4} Ha",
-//!          result.energy, result.energy_error);
+//! // Iterate step by step
+//! for step in &mut sim {
+//!     if step.is_equilibrated {
+//!         println!("Step {}: E = {:.6} Ha, N = {}",
+//!                  step.step, step.energy_estimate, step.population_size);
+//!     }
+//! }
 //! ```
 //!
 //! ## From TOML Configuration
@@ -41,7 +49,11 @@
 //! use dmc_core::prelude::*;
 //!
 //! let config = SimulationConfig::from_toml("dmc_config.toml").unwrap();
-//! let result = run_simulation(config).unwrap();
+//! let mut sim = Simulation::new(config).unwrap();
+//!
+//! for step in &mut sim {
+//!     // Process each step...
+//! }
 //! ```
 //!
 //! ## Theoretical Background
@@ -63,25 +75,22 @@
 //! - **Drift velocity**:
 //!   v_D = (ℏ/m)∇ln|Ψ_T|
 
-pub mod config;
-pub mod system;
 pub mod algorithm;
-pub mod walker;
+pub mod config;
 pub mod physics;
-pub mod output;
-pub mod simulation;
+pub mod state;
+pub mod system;
+pub mod walker;
 
 /// Convenient re-exports for common usage.
 pub mod prelude {
     pub use crate::config::{
-        AlgorithmType, ConfigError, OutputConfig, OutputFormat, SimulationConfig,
-        SimulationConfigBuilder, SystemType, TrialWfParams,
+        AlgorithmType, ConfigError, SimulationConfig, SimulationConfigBuilder, SystemType,
+        TrialWfParams,
     };
-    pub use crate::output::{
-        print_output_info, print_result_summary, print_simulation_header, SimulationResult,
-    };
-    pub use crate::simulation::{run_simulation, run_simulation_quiet, ProgressOptions};
+    pub use crate::state::{Simulation, SimulationError, SimulationState, SimulationStep};
     pub use crate::system::{QuantumSystem, TrialWavefunction};
+    pub use crate::walker::{Population, Walker};
 }
 
 /// 3D position vector type (atomic units: Bohr radii).

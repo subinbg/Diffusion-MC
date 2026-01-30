@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffusion Monte Carlo Simulator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a class="brand" href="../index.html">Diffusion MC</a>
+            <ul>
+                <li><a href="../index.html">Documentation</a></li>
+                <li><a class="active" href="index.html">Simulator</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="container">
+        <header>
+            <h1>Diffusion Monte Carlo Simulator</h1>
+            <p>Real-time quantum ground state calculations in the browser</p>
+        </header>
+
+        <div class="grid">
+            <!-- Control Panel -->
+            <section id="controls">
+                <article>
+                    <header>
+                        <h3>Configuration</h3>
+                    </header>
+
+                    <label for="system">Quantum System</label>
+                    <select id="system" name="system">
+                        <option value="hydrogen">Hydrogen (H)</option>
+                        <option value="h2_ion">H2+ Ion</option>
+                        <option value="h2_molecule">H2 Molecule</option>
+                    </select>
+
+                    <label for="algorithm">Algorithm</label>
+                    <select id="algorithm" name="algorithm">
+                        <option value="importance_sampled" selected>Importance Sampled</option>
+                        <option value="pure">Pure DMC</option>
+                    </select>
+
+                    <div class="grid">
+                        <div>
+                            <label for="num_walkers">Walkers</label>
+                            <input type="number" id="num_walkers" value="1000" min="100" max="10000" step="100">
+                        </div>
+                        <div>
+                            <label for="time_step">Time Step</label>
+                            <input type="number" id="time_step" value="0.01" min="0.001" max="0.1" step="0.001">
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div>
+                            <label for="total_steps">Total Steps</label>
+                            <input type="number" id="total_steps" value="5000" min="1000" max="100000" step="1000">
+                        </div>
+                        <div>
+                            <label for="equilibration_steps">Equilibration</label>
+                            <input type="number" id="equilibration_steps" value="500" min="0" max="10000" step="100">
+                        </div>
+                    </div>
+
+                    <label for="update_interval">
+                        Update Interval: <span id="update_interval_value">10</span> steps
+                    </label>
+                    <input type="range" id="update_interval" min="1" max="100" value="10">
+
+                    <footer>
+                        <div class="grid">
+                            <button id="start_btn" class="primary">Start</button>
+                            <button id="pause_btn" class="secondary" disabled>Pause</button>
+                            <button id="reset_btn" class="contrast">Reset</button>
+                        </div>
+                    </footer>
+                </article>
+            </section>
+
+            <!-- Statistics Panel -->
+            <section id="statistics">
+                <article>
+                    <header>
+                        <h3>Results</h3>
+                    </header>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Step</span>
+                            <span class="stat-value" id="stat_step">0</span>
+                            <span class="stat-unit">/ <span id="stat_total">5000</span></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Phase</span>
+                            <span class="stat-value" id="stat_phase">Ready</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Energy</span>
+                            <span class="stat-value" id="stat_energy">-</span>
+                            <span class="stat-unit">Ha</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Error</span>
+                            <span class="stat-value" id="stat_error">-</span>
+                            <span class="stat-unit">Ha</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Reference</span>
+                            <span class="stat-value" id="stat_exact">-0.5</span>
+                            <span class="stat-unit">Ha</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Population</span>
+                            <span class="stat-value" id="stat_population">0</span>
+                            <span class="stat-unit">walkers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Acceptance</span>
+                            <span class="stat-value" id="stat_acceptance">-</span>
+                            <span class="stat-unit">%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Deviation</span>
+                            <span class="stat-value" id="stat_deviation">-</span>
+                            <span class="stat-unit">%</span>
+                        </div>
+                    </div>
+
+                    <progress id="progress" value="0" max="100"></progress>
+                </article>
+            </section>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid">
+            <section>
+                <article>
+                    <header>
+                        <h3>Energy vs. Step</h3>
+                    </header>
+                    <canvas id="energy_chart"></canvas>
+                </article>
+            </section>
+            <section>
+                <article>
+                    <header>
+                        <h3>Population vs. Step</h3>
+                    </header>
+                    <canvas id="population_chart"></canvas>
+                </article>
+            </section>
+        </div>
+
+        <!-- Density Visualization -->
+        <section>
+            <article>
+                <header>
+                    <h3>Electron Density |ψ|²</h3>
+                    <div class="density-controls">
+                        <label for="density_plane">Plane:</label>
+                        <select id="density_plane">
+                            <option value="xy" selected>XY</option>
+                            <option value="xz">XZ</option>
+                            <option value="yz">YZ</option>
+                        </select>
+                        <label for="slice_position">Slice: <span id="slice_value">0.0</span> a₀</label>
+                        <input type="range" id="slice_position" min="-3" max="3" value="0" step="0.1">
+                        <label for="color_theme">Color:</label>
+                        <select id="color_theme">
+                            <option value="magma" selected>Magma</option>
+                            <option value="viridis">Viridis</option>
+                            <option value="plasma">Plasma</option>
+                            <option value="inferno">Inferno</option>
+                            <option value="grayscale">Grayscale</option>
+                        </select>
+                    </div>
+                </header>
+                <div class="density-container">
+                    <canvas id="density_canvas" width="400" height="400"></canvas>
+                    <div class="colorbar-container">
+                        <span class="colorbar-label" id="colorbar_max">1.0</span>
+                        <div id="colorbar"></div>
+                        <span class="colorbar-label" id="colorbar_min">0.0</span>
+                    </div>
+                </div>
+                <div class="density-info" id="density_info"></div>
+            </article>
+        </section>
+
+        <footer>
+            <p>
+                <small>
+                    Powered by <a href="https://github.com/subinbg/Diffusion-MC">Diffusion-MC</a>
+                </small>
+            </p>
+        </footer>
+    </main>
+
+    <noscript>
+        <article style="margin: 2rem;">
+            <h2>JavaScript Required</h2>
+            <p>This simulator requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+        </article>
+    </noscript>
+
+    <script>
+        // Check if ES modules are supported and working
+        window.addEventListener('error', function(e) {
+            if (e.message && e.message.includes('module')) {
+                showServerRequiredMessage();
+            }
+        });
+
+        function showServerRequiredMessage() {
+            document.body.innerHTML = `
+                <main class="container" style="margin-top: 2rem;">
+                    <article>
+                        <header><h2>Server Required</h2></header>
+                        <p>This simulator uses WebAssembly and ES modules, which require a web server to run properly.</p>
+                        <p>Opening the HTML file directly from your filesystem won't work due to browser security restrictions.</p>
+                        <h3>To run the simulator:</h3>
+                        <pre><code>cd Diffusion-MC
+cargo run -p site-builder -- serve</code></pre>
+                        <p>Then open <a href="http://localhost:8080/simulator/">http://localhost:8080/simulator/</a></p>
+                    </article>
+                </main>
+            `;
+        }
+    </script>
+    <script type="module" src="main.js" onerror="showServerRequiredMessage()"></script>
+</body>
+</html>

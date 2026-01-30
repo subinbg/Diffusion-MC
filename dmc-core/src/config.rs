@@ -19,16 +19,12 @@
 //!
 //! [system]
 //! type = "hydrogen"
-//!
-//! [output]
-//! format = "csv"
-//! directory = "./output"
 //! ```
 //!
 //! # Builder Example
 //!
 //! ```rust,no_run
-//! use dmc_core::config::{SimulationConfig, SystemType, AlgorithmType};
+//! use dmc_core::config::{SimulationConfig, SystemType, AlgorithmType, TrialWfParams};
 //!
 //! let config = SimulationConfig::builder()
 //!     .num_walkers(10_000)
@@ -36,6 +32,7 @@
 //!     .total_steps(100_000)
 //!     .system(SystemType::Hydrogen)
 //!     .algorithm(AlgorithmType::ImportanceSampled { max_offspring: 3 })
+//!     .trial_wavefunction(TrialWfParams::Hydrogen { alpha: 1.0 })
 //!     .build()
 //!     .unwrap();
 //! ```
@@ -95,9 +92,6 @@ pub struct SimulationConfig {
     /// # Equation
     /// E_T = ⟨E_L⟩ - α ln(N/N₀)
     pub feedback_alpha: f64,
-
-    /// Output configuration.
-    pub output: OutputConfig,
 }
 
 impl SimulationConfig {
@@ -194,57 +188,6 @@ pub enum TrialWfParams {
     },
 }
 
-/// Output configuration.
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct OutputConfig {
-    /// Output format: "csv", "json", or "both".
-    #[serde(default = "default_format")]
-    pub format: OutputFormat,
-
-    /// Output directory.
-    #[serde(default = "default_directory")]
-    pub directory: String,
-
-    /// File prefix.
-    #[serde(default)]
-    pub prefix: String,
-
-    /// Interval for writing energy data (0 = every step).
-    #[serde(default = "default_energy_interval")]
-    pub energy_interval: usize,
-
-    /// Interval for writing walker positions (0 = never).
-    #[serde(default)]
-    pub position_interval: usize,
-}
-
-fn default_format() -> OutputFormat {
-    OutputFormat::Csv
-}
-fn default_directory() -> String {
-    "./output".to_string()
-}
-fn default_energy_interval() -> usize {
-    1
-}
-
-/// Output format selection.
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum OutputFormat {
-    /// CSV format for spreadsheets and data analysis tools
-    #[default]
-    Csv,
-    /// JSON format for programmatic access
-    Json,
-    /// TOML format for human-readable, structured output
-    Toml,
-    /// Both CSV and JSON
-    Both,
-    /// All formats (CSV, JSON, TOML)
-    All,
-}
-
 /// Builder for SimulationConfig.
 #[derive(Default)]
 pub struct SimulationConfigBuilder {
@@ -257,7 +200,6 @@ pub struct SimulationConfigBuilder {
     system: Option<SystemType>,
     trial_wavefunction: Option<TrialWfParams>,
     feedback_alpha: Option<f64>,
-    output: Option<OutputConfig>,
 }
 
 impl SimulationConfigBuilder {
@@ -336,12 +278,6 @@ impl SimulationConfigBuilder {
         self
     }
 
-    /// Set output configuration.
-    pub fn output(mut self, out: OutputConfig) -> Self {
-        self.output = Some(out);
-        self
-    }
-
     /// Build the final configuration, validating all parameters.
     pub fn build(self) -> Result<SimulationConfig, ConfigError> {
         let num_walkers = self
@@ -380,7 +316,6 @@ impl SimulationConfigBuilder {
             system: self.system.unwrap_or_default(),
             trial_wavefunction: self.trial_wavefunction,
             feedback_alpha: self.feedback_alpha.unwrap_or(1.0),
-            output: self.output.unwrap_or_default(),
         })
     }
 }
@@ -391,8 +326,6 @@ struct TomlConfig {
     simulation: TomlSimulation,
     algorithm: TomlAlgorithm,
     system: TomlSystem,
-    #[serde(default)]
-    output: OutputConfig,
 }
 
 #[derive(Deserialize)]
@@ -503,7 +436,6 @@ impl TomlConfig {
             system,
             trial_wavefunction,
             feedback_alpha: self.algorithm.feedback_alpha,
-            output: self.output,
         })
     }
 }

@@ -11,7 +11,7 @@ This repository estimates the ground state of two well-known Bosonic systems: th
 ## Table of Contents
 
 - [Theoretical Background](#theoretical-background)
-- [Integral Formulation](#integral-formulation-of-the-imaginary-time-schrödinger-equation)
+- [Integral Formulation](#integral-formulation-of-the-imaginary-time-schrodinger-equation)
 - [Pure Diffusion Monte Carlo](#pure-diffusion-monte-carlo)
   - [Theory](#theory)
   - [Implementation](#implementation)
@@ -746,7 +746,7 @@ The asymmetry of the Green's function means that naive sampling does **not** sat
 f(\mathbf{y}) G(\mathbf{x} \leftarrow \mathbf{y}) \neq f(\mathbf{x}) G(\mathbf{y} \leftarrow \mathbf{x})
 ```
 
-This is why we need the **Metropolis acceptance/rejection step** to restore detailed balance (see [Step 3: Metropolis Acceptance/Rejection](#step-3-metropolis-acceptancerejection) in the Implementation section).
+This is why we need the **Metropolis acceptance/rejection step** to restore detailed balance (see [Step 3: Metropolis Acceptance/Rejection](#step-3-metropolis-acceptance-rejection) in the Implementation section).
 
 ---
 

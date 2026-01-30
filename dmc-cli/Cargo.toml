@@ -1,0 +1,29 @@
+[package]
+name = "dmc-cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Subeen Pang"]
+description = "Command-line interface for DMC simulations"
+license = "MIT"
+repository = "https://github.com/subinbg/Diffusion-MC"
+keywords = ["quantum", "monte-carlo", "cli"]
+categories = ["science", "command-line-utilities"]
+
+[dependencies]
+dmc-core = { path = "../dmc-core" }
+dmc-output = { path = "../dmc-output" }
+
+# CLI parsing (optional, for future enhancement)
+# clap = { version = "4", features = ["derive"] }
+
+[[bin]]
+name = "hydrogen"
+path = "src/bin/hydrogen.rs"
+
+[[bin]]
+name = "h2_ion"
+path = "src/bin/h2_ion.rs"
+
+[[bin]]
+name = "h2_molecule"
+path = "src/bin/h2_molecule.rs"
