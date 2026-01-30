@@ -41,6 +41,9 @@ fn documentation_page(body_content: &str) -> Markup {
                     "nav a { text-decoration: none; color: var(--pico-muted-color); padding: 0.5rem 0.75rem; transition: color 0.2s; }"
                     "nav a:hover { color: var(--pico-color); }"
                     "nav a.active { color: var(--pico-color); font-weight: 600; }"
+                    ".section-num { color: var(--pico-muted-color); text-decoration: none; font-weight: normal; margin-right: 0.3em; }"
+                    ".section-num:hover { color: var(--pico-primary); }"
+                    ".toc-num { color: var(--pico-muted-color); margin-right: 0.3em; }"
                 }
             }
             body {

@@ -3,6 +3,41 @@
 use pulldown_cmark::{CodeBlockKind, Event, Options, Parser as MdParser, Tag, TagEnd};
 use std::collections::HashMap;
 
+/// Tracks section numbers for hierarchical heading numbering.
+struct SectionCounter {
+    h2: usize,
+    h3: usize,
+    h4: usize,
+}
+
+impl SectionCounter {
+    fn new() -> Self {
+        Self { h2: 0, h3: 0, h4: 0 }
+    }
+
+    /// Increment counter for the given heading level and return the section number string.
+    fn increment(&mut self, level: u8) -> String {
+        match level {
+            2 => {
+                self.h2 += 1;
+                self.h3 = 0;
+                self.h4 = 0;
+                format!("{}.", self.h2)
+            }
+            3 => {
+                self.h3 += 1;
+                self.h4 = 0;
+                format!("{}.{}.", self.h2, self.h3)
+            }
+            4 => {
+                self.h4 += 1;
+                format!("{}.{}.{}.", self.h2, self.h3, self.h4)
+            }
+            _ => String::new(),
+        }
+    }
+}
+
 /// Convert markdown content to HTML with math rendering.
 pub fn markdown_to_html(content: &str) -> Result<String, Box<dyn std::error::Error>> {
     // Step 1: Extract all inline math and replace with numbered placeholders
@@ -39,6 +74,8 @@ pub fn markdown_to_html(content: &str) -> Result<String, Box<dyn std::error::Err
     let mut heading_text = String::new(); // Plain text for slug generation
     let mut slug_counts: HashMap<String, usize> = HashMap::new(); // Track duplicate headings
     let mut output_events: Vec<Event> = Vec::new();
+    let mut section_counter = SectionCounter::new(); // Track section numbers
+    let mut slug_to_number: HashMap<String, String> = HashMap::new(); // Map slug to section number for TOC
 
     for event in parser {
         match &event {
@@ -131,13 +168,32 @@ pub fn markdown_to_html(content: &str) -> Result<String, Box<dyn std::error::Err
                 };
                 *slug_counts.get_mut(&slugify(&heading_text)).unwrap() += 1;
 
-                let heading_html = format!(
-                    "<h{} id=\"{}\">{}</h{}>",
-                    heading_level,
-                    slug,
-                    heading_content,
-                    heading_level
-                );
+                // Generate section number (skip h1 and "Table of Contents")
+                let section_num = if heading_level >= 2
+                    && heading_level <= 4
+                    && heading_text.trim() != "Table of Contents"
+                {
+                    section_counter.increment(heading_level)
+                } else {
+                    String::new()
+                };
+
+                // Store mapping for TOC post-processing
+                if !section_num.is_empty() {
+                    slug_to_number.insert(slug.clone(), section_num.clone());
+                }
+
+                let heading_html = if section_num.is_empty() {
+                    format!(
+                        "<h{} id=\"{}\">{}</h{}>",
+                        heading_level, slug, heading_content, heading_level
+                    )
+                } else {
+                    format!(
+                        "<h{} id=\"{}\"><a href=\"#table-of-contents\" class=\"section-num\">{}</a> {}</h{}>",
+                        heading_level, slug, section_num, heading_content, heading_level
+                    )
+                };
                 output_events.push(Event::Html(heading_html.into()));
                 continue;
             }
@@ -148,7 +204,48 @@ pub fn markdown_to_html(content: &str) -> Result<String, Box<dyn std::error::Err
     let mut html_output = String::new();
     pulldown_cmark::html::push_html(&mut html_output, output_events.into_iter());
 
+    // Post-process to add section numbers to TOC links
+    let html_output = add_numbers_to_toc(&html_output, &slug_to_number);
+
     Ok(html_output)
+}
+
+/// Add section numbers to TOC links.
+fn add_numbers_to_toc(html: &str, slug_to_number: &HashMap<String, String>) -> String {
+    let mut result = html.to_string();
+    for (slug, number) in slug_to_number {
+        // Try both unencoded and URL-encoded versions of the slug
+        let patterns = [
+            format!("<a href=\"#{}\">", slug),
+            format!("<a href=\"#{}\">", url_encode_slug(slug)),
+        ];
+
+        for pattern in &patterns {
+            if let Some(pos) = result.find(pattern) {
+                let insert_pos = pos + pattern.len();
+                let number_span = format!("<span class=\"toc-num\">{}</span> ", number);
+                result.insert_str(insert_pos, &number_span);
+                break; // Only insert once per slug
+            }
+        }
+    }
+    result
+}
+
+/// URL-encode special characters in slugs (for matching TOC links).
+fn url_encode_slug(slug: &str) -> String {
+    slug.chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || c == '-' || c == '_' {
+                c.to_string()
+            } else {
+                // Encode non-ASCII characters
+                let mut buf = [0u8; 4];
+                let encoded = c.encode_utf8(&mut buf);
+                encoded.bytes().map(|b| format!("%{:02X}", b)).collect()
+            }
+        })
+        .collect()
 }
 
 /// Extract inline math from GitHub syntax $`...`$ and replace with placeholders.
