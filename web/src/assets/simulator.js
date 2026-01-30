@@ -86,6 +86,7 @@ const elements = {
     colorbarMax: document.getElementById('colorbar_max'),
     colorbarMin: document.getElementById('colorbar_min'),
     densityInfo: document.getElementById('density_info'),
+    zeroVarianceWarning: document.getElementById('zero_variance_warning'),
 };
 
 // Initialize application
@@ -101,6 +102,7 @@ async function main() {
 // Set up event listeners
 function setupEventListeners() {
     elements.system.addEventListener('change', onSystemChange);
+    elements.algorithm.addEventListener('change', onAlgorithmChange);
     elements.updateInterval.addEventListener('input', onUpdateIntervalChange);
     elements.startBtn.addEventListener('click', onStart);
     elements.pauseBtn.addEventListener('click', onPause);
@@ -108,12 +110,27 @@ function setupEventListeners() {
     elements.densityPlane.addEventListener('change', updateDensity);
     elements.slicePosition.addEventListener('input', onSliceChange);
     elements.colorTheme.addEventListener('change', onColorThemeChange);
+    updateZeroVarianceWarning();
 }
 
 // System change handler
 function onSystemChange() {
     const system = elements.system.value;
     elements.statExact.textContent = EXACT_ENERGIES[system].toFixed(4);
+    updateZeroVarianceWarning();
+}
+
+// Algorithm change handler
+function onAlgorithmChange() {
+    updateZeroVarianceWarning();
+}
+
+// Update zero variance warning visibility
+function updateZeroVarianceWarning() {
+    const system = elements.system.value;
+    const algorithm = elements.algorithm.value;
+    const showWarning = (system === 'hydrogen' && algorithm === 'importance_sampled');
+    elements.zeroVarianceWarning.style.display = showWarning ? 'block' : 'none';
 }
 
 // Update interval change handler

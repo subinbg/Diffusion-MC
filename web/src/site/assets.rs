@@ -85,6 +85,17 @@ header p {
     margin-bottom: 2rem;
 }
 
+/* Warning box */
+.warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: var(--pico-border-radius);
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0 1rem 0;
+    font-size: 0.875rem;
+    color: #856404;
+}
+
 /* Statistics Grid */
 .stats-grid {
     display: grid;

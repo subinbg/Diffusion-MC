@@ -165,6 +165,11 @@ fn control_panel() -> Markup {
                     option value="pure" { "Pure DMC" }
                 }
 
+                div id="zero_variance_warning" class="warning-box" style="display: none;" {
+                    strong { "Note: " }
+                    "With the exact trial wavefunction (α = 1), the hydrogen ground state has zero variance."
+                }
+
                 div class="grid" {
                     div {
                         label for="num_walkers" { "Walkers" }
