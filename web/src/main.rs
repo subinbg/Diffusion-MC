@@ -4,31 +4,30 @@
 //!
 //! ```bash
 //! # Build WASM module
-//! cargo run -p web --features cli -- wasm
+//! cargo run -p web -- wasm
 //!
 //! # Build the complete site
-//! cargo run -p web --features cli -- build
+//! cargo run -p web -- build
 //!
 //! # Build and serve with dev server
-//! cargo run -p web --features cli -- serve
+//! cargo run -p web -- serve
 //!
 //! # Serve on custom port
-//! cargo run -p web --features cli -- serve --port 3000
+//! cargo run -p web -- serve --port 3000
 //! ```
 
-#[cfg(feature = "cli")]
+#[cfg(not(target_arch = "wasm32"))]
 mod cli;
-#[cfg(feature = "cli")]
+#[cfg(not(target_arch = "wasm32"))]
 mod site;
 
-#[cfg(feature = "cli")]
+#[cfg(not(target_arch = "wasm32"))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     cli::run()
 }
 
-#[cfg(not(feature = "cli"))]
+#[cfg(target_arch = "wasm32")]
 fn main() {
-    eprintln!("CLI not available. Build with --features cli");
-    eprintln!("Example: cargo run -p web --features cli -- build");
-    std::process::exit(1);
+    // This binary is not meant to run in WASM
+    unreachable!("This binary should not be compiled for WASM");
 }

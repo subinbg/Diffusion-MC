@@ -7,7 +7,7 @@ pub const SIMULATOR_JS: &str = include_str!("../assets/simulator.js");
 /// Pico CSS handles most styling via CDN; this adds simulator-specific styles.
 pub const SIMULATOR_CSS: &str = r#"
 :root {
-    --pico-font-size: 16px;
+    --pico-font-size: 106.25%;
 }
 
 body {
