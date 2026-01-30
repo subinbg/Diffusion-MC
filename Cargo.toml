@@ -1,5 +1,11 @@
 [workspace]
 resolver = "2"
 members = [
-    "site-builder",
+    "simulation",
+    "examples",
+    "web",
 ]
+
+[profile.release]
+opt-level = "s"
+lto = true
