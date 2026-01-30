@@ -87,6 +87,10 @@ pub fn markdown_to_html(content: &str) -> Result<String, Box<dyn std::error::Err
                             if in_heading {
                                 // Add rendered math inline within the heading
                                 heading_content.push_str(rendered);
+                                // Also add original LaTeX to heading_text for slug generation
+                                if let Some(original_latex) = inline_math_map.get(&id) {
+                                    heading_text.push_str(original_latex);
+                                }
                             } else {
                                 output_events.push(Event::Html(rendered.clone().into()));
                             }
@@ -126,6 +130,7 @@ pub fn markdown_to_html(content: &str) -> Result<String, Box<dyn std::error::Err
                     format!("{}-{}", base_slug, count)
                 };
                 *slug_counts.get_mut(&slugify(&heading_text)).unwrap() += 1;
+
                 let heading_html = format!(
                     "<h{} id=\"{}\">{}</h{}>",
                     heading_level,
@@ -201,24 +206,25 @@ pub fn html_escape(text: &str) -> String {
         .replace('>', "&gt;")
 }
 
-/// Generate a URL-safe slug from heading text.
+/// Generate a URL-safe slug from heading text (matches GitHub's behavior).
 fn slugify(text: &str) -> String {
     text.to_lowercase()
         .chars()
         .map(|c| match c {
-            'a'..='z' | '0'..='9' => c,
-            ' ' | '-' | '_' => '-',
-            // Convert common accented characters to ASCII equivalents
-            'ö' | 'ò' | 'ó' | 'ô' | 'õ' => 'o',
-            'ä' | 'à' | 'á' | 'â' | 'ã' => 'a',
-            'ü' | 'ù' | 'ú' | 'û' => 'u',
-            'ë' | 'è' | 'é' | 'ê' => 'e',
-            'ï' | 'ì' | 'í' | 'î' => 'i',
-            'ñ' => 'n',
-            'ç' => 'c',
-            // Remove apostrophes entirely (no hyphen)
+            // Keep alphanumeric, accented chars, and underscores
+            'a'..='z' | '0'..='9' | '_' => c,
+            'ö' | 'ò' | 'ó' | 'ô' | 'õ' => c,
+            'ä' | 'à' | 'á' | 'â' | 'ã' => c,
+            'ü' | 'ù' | 'ú' | 'û' => c,
+            'ë' | 'è' | 'é' | 'ê' => c,
+            'ï' | 'ì' | 'í' | 'î' => c,
+            'ñ' | 'ç' => c,
+            // Convert spaces and hyphens to hyphens
+            ' ' | '-' => '-',
+            // Remove apostrophes entirely
             '\'' | '\u{2018}' | '\u{2019}' => '\0',
-            _ => '-',
+            // Remove other characters
+            _ => '\0',
         })
         .filter(|&c| c != '\0')
         .collect::<String>()
